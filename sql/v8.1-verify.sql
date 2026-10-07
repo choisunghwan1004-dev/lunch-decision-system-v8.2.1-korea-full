@@ -20,3 +20,12 @@ WHERE code IN (
 '41','42','43','44','45','46','47','48','50'
 )
 ORDER BY sort_order;
+
+
+USE lunch_decision;
+
+
+
+
+show tables;
+
