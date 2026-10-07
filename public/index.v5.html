@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>오늘 뭐 먹지? | AI 점심 결정 시스템</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="app-shell">
+<aside class="sidebar">
+  <div class="brand"><div class="brand-mark">🍚</div><div><strong>오늘 뭐 먹지?</strong><span>AI 점심 결정 시스템</span></div></div>
+  <nav><a class="nav-item active" href="#home">⌂ <span>홈</span></a><a class="nav-item" href="#recommendation">♨ <span>오늘의 추천</span></a><a class="nav-item" href="#history">♜ <span>나의 기록</span></a><a class="nav-item" href="#profile">♙ <span>내 정보</span></a><a class="nav-item" href="/admin">⚙ <span>관리자</span></a></nav>
+  <div class="side-info"><div class="info-block"><span>⌖</span><div><small>현재 지역</small><b>서울특별시<br>종각·시청·광화문</b></div></div><div class="info-block"><span>☀</span><div><small>오늘 날씨</small><b id="sideWeather">날씨 확인 중...</b><small id="weatherDetail">실시간 날씨를 점심 결정에 반영</small></div></div></div>
+  <div class="side-mascot"><div class="mini-mascot">🍜</div><div><b>맛있는 하루 되세요!</b><small>좋은 음식이 좋은 하루를 만듭니다.</small></div></div>
+</aside>
+<main class="main" id="home">
+  <div class="topbar"><div id="loginState">게스트로 이용 중</div><div><button class="small-btn" id="loginBtn">로그인</button><button class="small-btn" id="registerBtn">회원가입</button><button class="small-btn hidden" id="logoutBtn">로그아웃</button></div></div>
+  <section class="hero"><div class="hero-copy"><div class="hero-badge">▣ 오늘의 점심, 제가 대신 골라드렸어요!</div><p class="eyebrow">AI LUNCH DECISION</p><h1>오늘은 <span id="heroArea">종각역</span> <strong id="heroRestaurant">점심 맛집</strong>으로<br>결정했습니다!</h1><p class="hero-reason">👍 <span id="heroMenu">든든하고 맛있는 한 끼</span>, 오늘도 편하게 점심 드세요.</p><button class="primary-btn" id="decide">오늘 점심 다시 결정하기</button></div><div class="character-wrap"><img src="/assets/character.png" alt="점심을 추천하는 AI 캐릭터" class="character"><div class="speech">맛있는 점심으로<br>행복한 하루 보내세요! 😊</div></div></section>
+  <section class="control-card" id="profile"><div class="control-title"><div><b>나의 자동 결정 조건</b><span>저장하면 다음 점심부터 자동으로 반영됩니다.</span></div><span class="auto-pill">AUTO</span></div><div class="controls"><label>도시<select id="cityId"><option value="1">서울</option><option value="2">부산</option><option value="3">무주</option><option value="4">도쿄</option><option value="5">오사카</option><option value="6">후쿠오카</option></select></label><label>상권 ID<input id="areaId" type="number" value="1"></label><label>현재 위치<button class="location-btn" id="locationBtn" type="button">⌖ 내 위치 가져오기</button><small id="locationState">거리 계산에 사용합니다.</small></label><label>점심 예산<input id="budget" type="number" value="15000"></label><label>인원<input id="people" type="number" min="1" value="2"></label><label>좋아하는 음식<input id="liked" placeholder="한식, 국밥"></label><label>싫어하는 음식<input id="disliked" placeholder="초밥, 매운 음식"></label><button class="save-btn" id="saveProfile">내 조건 저장</button></div></section>
+  <section id="recommendation" class="recommendation-layout"><article id="result" class="food-card"><div class="loading-state"><span class="spinner"></span><b>오늘의 점심을 준비하고 있습니다...</b><small>예산·거리·날씨·최근 방문 기록을 함께 판단합니다.</small></div></article><aside class="reason-card"><div class="card-heading"><span>💡</span><div><b>추천 이유</b><small>개인화 자동 판단 결과</small></div></div><ul id="reasons"><li>오늘의 조건을 분석하고 있습니다.</li></ul><div class="action-stack"><button class="map-btn" id="mapBtn">⌖ 지도에서 보기</button><button class="route-btn" id="routeBtn">➤ 길찾기</button></div><div class="feedback-row"><button class="keep-btn" id="keepBtn">👍 그대로 갈게요</button><button class="other-btn" id="otherBtn">👎 다른 곳 볼래요</button></div></aside></section>
+  <section class="context-strip"><div><span>☀</span><small>현재 날씨</small><b id="contextWeather">확인 중</b></div><div><span>📅</span><small>요일</small><b id="contextWeekday">-</b></div><div><span>⌖</span><small>거리</small><b id="contextDistance">위치 필요</b></div><div><span>◷</span><small>점심 가능시간</small><b id="contextLunch">11:30 ~ 13:30</b></div></section><section class="detail-grid" id="details"><div><span>◷</span><small>영업시간</small><b id="hours">11:00 ~ 15:00</b><em id="breakTime">점심시간</em></div><div><span>🍴</span><small>주요메뉴</small><b id="menu">-</b></div><div><span>⌖</span><small>주소</small><b id="address">-</b></div><div><span>☎</span><small>전화번호</small><b id="phone">등록 예정</b></div></section>
+  <section class="alternatives" id="history"><div class="section-title"><h2>나의 점심 이력</h2><button id="refreshHistory">↻ 새로고침</button></div><div id="historySummary" class="history-summary"></div><div id="learningPanel" class="learning-panel"><div><b>🧠 나를 학습한 결과</b><span id="learningText">로그인하면 사용 패턴을 분석합니다.</span></div><div id="learningTags" class="learning-tags"></div></div><div id="historyList" class="history-list"><div class="empty-history">로그인하면 내가 먹은 음식과 거부한 음식이 자동으로 기록됩니다.</div></div></section>
+  <footer class="ai-note">🧠 사용자의 취향, 예산, 방문·거부 이력과 반복 패턴을 학습해 다음 점심을 자동으로 결정합니다. <span>오늘도 맛있는 하루 되세요! 😊</span></footer>
+</main></div>
+<div class="modal hidden" id="authModal"><div class="modal-card"><button class="modal-close" id="closeAuth">×</button><h2 id="authTitle">로그인</h2><div id="registerNameWrap" class="hidden"><label>이름<input id="authName"></label></div><label>아이디<input id="authUsername"></label><label>비밀번호<input id="authPassword" type="password"></label><button class="primary-btn full" id="submitAuth">로그인</button><p id="authSwitch">처음 방문하셨나요? <button>회원가입</button></p></div></div>
+<script src="/script.js"></script>
+</body></html>

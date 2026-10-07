@@ -1,0 +1,27 @@
+{
+  "name": "lunch-decision-system-v8.2-cascade",
+  "version": "8.2.1",
+  "description": "전국·일본 확장형 개인화 자동결정 시스템 - V7.4 안정화",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "check": "node --check server.js",
+    "import:locations": "node scripts/import-korea-locations.js",
+    "import:korea": "node scripts/import-korea-locations.js",
+    "download:korea": "node scripts/download-korea-legal-dong.js",
+    "setup:korea": "npm run download:korea && npm run import:locations"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "mysql2": "^3.14.4",
+    "csv-parse": "^5.5.6",
+    "iconv-lite": "^0.6.3"
+  },
+  "engines": {
+    "node": ">=18.18.0"
+  }
+}

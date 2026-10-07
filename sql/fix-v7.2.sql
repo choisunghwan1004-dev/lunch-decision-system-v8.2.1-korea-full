@@ -1,0 +1,11 @@
+-- V7.2 compatibility note
+--
+-- 현재 프로젝트의 정규화된 DB 구조에서는 cities 테이블에 country_id가 없습니다.
+-- 국가 정보는 regions.country_id -> countries.id로 연결합니다.
+-- 따라서 'Unknown column country_id in field list' 오류는 DB를 삭제하거나
+-- cities에 중복 country_id 컬럼을 추가할 문제가 아니라 recommendation.js의
+-- JOIN을 수정해야 하는 코드 호환성 문제입니다. V7.2에서는 이미 수정되어 있습니다.
+--
+-- Google Places API_KEY_INVALID는 DB 오류가 아닙니다.
+-- .env의 GOOGLE_MAPS_API_KEY를 실제 Google Maps Platform API Key로 교체하고
+-- Places API (New)를 활성화한 후 서버를 재시작하세요.

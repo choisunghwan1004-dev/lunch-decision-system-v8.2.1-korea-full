@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>V8 관리자 센터</title>
+<link rel="stylesheet" href="/style.css">
+<style>
+body{background:linear-gradient(135deg,#eef2ff,#f8fafc);color:#172033}.adminwrap{max-width:1450px;margin:auto;padding:28px}.admin-login{max-width:430px;margin:90px auto;background:#fff;padding:32px;border-radius:24px;box-shadow:0 20px 50px rgba(30,41,59,.12)}.admin-login .logo{font-size:42px}.admin-login h1{margin:8px 0}.admin-login p{color:#64748b}.admin-app{display:none}.admin-head{background:linear-gradient(135deg,#312e81,#4f46e5);color:#fff;padding:25px;border-radius:24px;box-shadow:0 16px 35px rgba(67,56,202,.2)}.admin-head h1{margin:0 0 6px}.admin-head p{margin:0;opacity:.86}.head-actions{float:right;margin-top:-42px;display:flex;gap:8px}.head-actions button{border:0;border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:800}.home{background:#fff;color:#3730a3}.logout{background:#1e1b4b;color:#fff}.stats{display:grid;grid-template-columns:repeat(8,1fr);gap:12px;margin:18px 0}.stat{background:#fff;padding:18px;border-radius:18px;border:1px solid #e2e8f0;box-shadow:0 7px 20px rgba(15,23,42,.05)}.stat span{color:#64748b;font-size:13px}.stat b{display:block;font-size:26px;color:#3730a3;margin-top:5px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.tabs button{border:0;padding:12px 16px;border-radius:12px;background:#e0e7ff;color:#3730a3;font-weight:800;cursor:pointer}.tabs button.active{background:#4338ca;color:#fff}.panel{display:none}.panel.active{display:block}.card{background:#fff;border-radius:20px;padding:22px;margin-bottom:16px;border:1px solid #e2e8f0}.formgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.formgrid input,.formgrid select{width:100%;min-height:44px;padding:10px 12px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;box-sizing:border-box}.formgrid select{cursor:pointer}.primary{background:#4338ca;color:#fff;border:0;padding:12px 18px;border-radius:12px;font-weight:800;cursor:pointer}.status{margin-top:10px;color:#475569}.status.ok{color:#166534;font-weight:800}.status.error{color:#b42318;font-weight:800}.hint{font-size:13px;color:#64748b}.tablewrap{overflow:auto;margin-top:16px}table{width:100%;border-collapse:collapse;background:#fff}th,td{padding:10px;border-bottom:1px solid #e5e7eb;text-align:left;white-space:nowrap}th{background:#f1f5f9;color:#334155}.location-path{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.location-path span{background:#eef2ff;color:#3730a3;padding:7px 10px;border-radius:999px;font-weight:700}.danger{background:#fff7ed;border:1px solid #fed7aa}.success{background:#f0fdf4;border:1px solid #bbf7d0}.sync-box{background:linear-gradient(135deg,#ecfeff,#eff6ff);border:1px solid #bae6fd}.sync-grid{display:grid;grid-template-columns:1fr 1fr 2fr auto;gap:10px;align-items:end}@media(max-width:1100px){.stats{grid-template-columns:repeat(4,1fr)}.formgrid,.sync-grid{grid-template-columns:1fr 1fr}.head-actions{float:none;margin:15px 0 0}}@media(max-width:600px){.stats{grid-template-columns:1fr 1fr}.formgrid,.sync-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body><main class="adminwrap">
+<section id="login" class="admin-login"><div class="logo">🧭</div><h1>V8 관리자 센터</h1><p>국가 → 시/도 → 시/군/구 → 읍/면/동 → 리 → 상권 → 음식점</p><input id="username" placeholder="관리자 아이디" value="admin"><input id="password" type="password" placeholder="비밀번호" value="Admin1234!" style="margin-top:10px"><button class="primary" onclick="login()" style="width:100%;margin-top:14px">관리자 로그인</button><div id="loginMsg" class="status error"></div></section>
+<section id="app" class="admin-app">
+<header class="admin-head"><div class="head-actions"><button class="home" onclick="location.href='/'">🏠 사용자 화면</button><button class="logout" onclick="logout()">로그아웃</button></div><h1>🧭 V8 관리자 센터</h1><p>모든 지역 입력을 직접 타이핑하지 않고 단계별 Select로 관리합니다.</p></header>
+<div id="stats" class="stats"></div>
+<div class="tabs"><button onclick="show('location')">📍 지역 관리</button><button onclick="show('restaurant')">🍚 음식점 등록</button><button onclick="show('sync')">🌐 실제 데이터 동기화</button><button onclick="show('places')">🗺 여행 장소</button></div>
+
+<section id="location" class="panel active">
+<div class="card success"><h2>📍 V8 행정구역 선택</h2><p class="hint">앞 단계가 선택되면 다음 단계가 자동으로 열립니다.</p>
+<div class="formgrid"><select id="locCountry"></select><select id="locProvince" disabled></select><select id="locDistrict" disabled></select><select id="locTown" disabled></select><select id="locRi" disabled></select><select id="locArea" disabled></select><input id="locNewName" placeholder="새 지역명(필요할 때만)"><select id="locNewLevel"><option value="province">시/도</option><option value="district">시/군/구</option><option value="town">읍/면/동</option><option value="ri">리</option><option value="area">상권</option></select><button class="primary" onclick="addLocation()">선택 상위지역에 등록</button></div>
+<div id="locationPath" class="location-path"></div><div id="locationMsg" class="status"></div></div>
+<div class="card"><h3>현재 선택 목록</h3><div id="locationTable" class="tablewrap"></div></div>
+</section>
+
+<section id="restaurant" class="panel">
+<div class="card"><h2>🍚 음식점 등록</h2><p class="hint">국가부터 상권까지 선택하면 기존 ID를 직접 입력할 필요가 없습니다.</p>
+<div class="formgrid"><select id="rCountry"></select><select id="rProvince" disabled></select><select id="rDistrict" disabled></select><select id="rTown" disabled></select><select id="rRi" disabled></select><select id="rArea" disabled></select><input id="rName" placeholder="음식점명"><select id="rCategory"><option value="한식">한식</option><option value="중식">중식</option><option value="일식">일식</option><option value="양식">양식</option><option value="국밥">국밥</option><option value="면요리">면요리</option><option value="라멘">라멘</option><option value="우동">우동</option><option value="카페식사">카페식사</option><option value="기타">기타</option></select><input id="rMin" type="number" placeholder="최저가격"><input id="rMax" type="number" placeholder="최고가격"><input id="rAddress" placeholder="주소"><input id="rMenu" placeholder="대표메뉴"><input id="rRating" type="number" step="0.1" placeholder="평점"><input id="rReviews" type="number" placeholder="리뷰 수"><input id="rGooglePlace" placeholder="Google Place ID (선택)"><input id="rLat" type="number" step="0.0000001" placeholder="위도"><input id="rLng" type="number" step="0.0000001" placeholder="경도"><input id="rImage" placeholder="이미지 경로"><input id="rLunchStart" type="time" value="11:00"><input id="rLunchEnd" type="time" value="15:00"><button class="primary" onclick="addRestaurant()">음식점 등록</button></div><div id="restaurantMsg" class="status"></div></div>
+<div class="card"><h3>음식점 목록</h3><div id="restaurantTable" class="tablewrap"></div></div>
+</section>
+
+<section id="sync" class="panel"><div class="card sync-box"><h2>🌐 Google Places 실제 데이터</h2><p>도시를 선택하면 실제 음식점·카페·관광지·호텔을 가져옵니다.</p><div class="sync-grid"><label>도시<select id="syncCity"></select></label><label>국가코드<select id="syncCountry"><option>KR</option><option>JP</option></select></label><div class="hint">필요: GOOGLE_MAPS_API_KEY</div><button class="primary" onclick="syncPlaces()">실제 데이터 동기화</button></div><div id="syncMsg" class="status"></div></div></section>
+
+<section id="places" class="panel"><div class="card"><h2>🗺 여행 장소</h2><div id="placeTable" class="tablewrap"></div></div></section>
+</section></main>
+<script>
+const $=id=>document.getElementById(id);
+const api=async(url,opt={})=>{const r=await fetch(url,opt);const d=await r.json();if(!r.ok)throw Error(d.message+(d.detail?' | '+d.detail:''));return d};
+let DATA={locations:[],restaurants:[],places:[],cities:[]};
+const LEVELS=['country','province','district','town','ri','area'];
+function show(id){document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');}
+function option(v,t,disabled=false){return `<option value="${v}" ${disabled?'disabled':''}>${t}</option>`;}
+function children(parentId,level){return DATA.locations.filter(x=>String(x.parent_id)===String(parentId)&&x.level===level&&x.active!==0);}
+function countryRows(){return DATA.locations.filter(x=>x.level==='country');}
+function setSelect(id,rows,placeholder){$(id).innerHTML=option('',placeholder)+rows.map(x=>option(x.id,x.name)).join('');$(id).disabled=rows.length===0;}
+function resetAfter(ids){ids.forEach(id=>{$(id).innerHTML=option('','먼저 상위 지역을 선택하세요');$(id).disabled=true;});}
+function currentLocation(prefix){return [$(prefix+'Country').value,$(prefix+'Province').value,$(prefix+'District').value,$(prefix+'Town').value,$(prefix+'Area').value].map(Number).findLast(v=>v>0)||null;}
+function selectedPath(prefix){return ['Country','Province','District','Town','Ri','Area'].map(s=>$(prefix+s).selectedOptions[0]?.textContent).filter(x=>x&& !x.includes('선택') && !x.includes('먼저')).join(' > ');}
+function fillCountries(){const html=option('','국가를 선택하세요')+countryRows().map(x=>option(x.id,`${x.code||''} · ${x.name}`)).join('');['locCountry','rCountry'].forEach(id=>$(id).innerHTML=html);resetAfter(['locProvince','locDistrict','locTown','locRi','locArea','rProvince','rDistrict','rTown','rRi','rArea']);}
+function bindCascade(prefix){
+  $(prefix+'Country').addEventListener('change',()=>{const c=Number($(prefix+'Country').value);const ps=children(c,'province');setSelect(prefix+'Province',ps,'시/도를 선택하세요');resetAfter([prefix+'District',prefix+'Town',prefix+'Ri',prefix+'Area']);updatePath(prefix);});
+  $(prefix+'Province').addEventListener('change',()=>{const p=Number($(prefix+'Province').value);setSelect(prefix+'District',children(p,'district'),'시/군/구를 선택하세요');resetAfter([prefix+'Town',prefix+'Ri',prefix+'Area']);updatePath(prefix);});
+  $(prefix+'District').addEventListener('change',()=>{const d=Number($(prefix+'District').value);setSelect(prefix+'Town',children(d,'town'),'읍/면/동을 선택하세요');resetAfter([prefix+'Ri',prefix+'Area']);updatePath(prefix);});
+  $(prefix+'Town').addEventListener('change',()=>{const t=Number($(prefix+'Town').value);setSelect(prefix+'Ri',children(t,'ri'),'리를 선택하세요');resetAfter([prefix+'Area']);updatePath(prefix);});
+  $(prefix+'Ri').addEventListener('change',()=>{const r=Number($(prefix+'Ri').value);setSelect(prefix+'Area',children(r,'area'),'상권을 선택하세요');updatePath(prefix);});
+  $(prefix+'Area').addEventListener('change',()=>updatePath(prefix));
+}
+function updatePath(prefix){if(prefix==='loc')$('locationPath').innerHTML=selectedPath(prefix).split(' > ').filter(Boolean).map(x=>`<span>${x}</span>`).join('');}
+function selectedLeaf(prefix){const ids=['Country','Province','District','Town','Ri','Area'];for(let i=ids.length-1;i>=0;i--){const v=Number($(prefix+ids[i]).value);if(v)return v;}return null;}
+async function loadAll(){
+  DATA.locations=await api('/api/admin/locations/tree');
+  DATA.restaurants=await api('/api/admin/restaurants');
+  DATA.places=await api('/api/admin/places');
+  DATA.cities=await api('/api/admin/cities');
+  fillCountries();
+  $('syncCity').innerHTML=option('','도시를 선택하세요')+DATA.cities.map(x=>option(x.id,x.name)).join('');
+  renderLocations();renderRestaurants();renderPlaces();
+  const d=await api('/api/admin/dashboard');
+  $('stats').innerHTML=Object.entries({국가:d.countries,시도:d.regions,도시:d.cities,상권:d.areas,전체지역:d.locations,음식점:d.restaurants,여행장소:d.places,회원:d.users}).map(([k,v])=>`<div class="stat"><span>${k}</span><b>${v}</b></div>`).join('');
+}
+function renderLocations(){const rows=DATA.locations.slice(0,200).map(x=>`<tr><td>${x.id}</td><td>${x.level}</td><td>${x.name}</td><td>${x.parent_id||''}</td><td>${x.code||''}</td></tr>`);$('locationTable').innerHTML='<table><thead><tr><th>ID</th><th>단계</th><th>명칭</th><th>상위ID</th><th>코드</th></tr></thead><tbody>'+rows.join('')+'</tbody></table>';}
+function renderRestaurants(){const rows=DATA.restaurants.map(x=>`<tr><td>${x.id}</td><td>${x.country_name||''}</td><td>${x.region_name||''}</td><td>${x.city_name||''}</td><td>${x.area_name||x.location_name||''}</td><td>${x.name}</td><td>${x.category}</td><td>${x.price_min}~${x.price_max}</td><td>${x.rating||0}</td></tr>`);$('restaurantTable').innerHTML='<table><thead><tr><th>ID</th><th>국가</th><th>시/도</th><th>도시</th><th>상권</th><th>음식점</th><th>종류</th><th>가격</th><th>평점</th></tr></thead><tbody>'+rows.join('')+'</tbody></table>';}
+function renderPlaces(){const rows=DATA.places.map(x=>`<tr><td>${x.id}</td><td>${x.city_name||''}</td><td>${x.place_type}</td><td>${x.name}</td><td>${x.address||''}</td><td>${x.rating||0}</td></tr>`);$('placeTable').innerHTML='<table><thead><tr><th>ID</th><th>도시</th><th>종류</th><th>장소</th><th>주소</th><th>평점</th></tr></thead><tbody>'+rows.join('')+'</tbody></table>';}
+async function addLocation(){try{const name=$('locNewName').value.trim();if(!name)return alert('등록할 지역명을 입력하세요.');const parent=selectedLeaf('loc');const level=$('locNewLevel').value;if(!parent && level!=='province')return alert('먼저 상위 지역을 선택하세요.');const body={parent_id:parent,name,level};const d=await api('/api/admin/locations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});$('locationMsg').className='status ok';$('locationMsg').textContent=d.message; $('locNewName').value='';DATA.locations=await api('/api/admin/locations/tree');fillCountries();renderLocations();}catch(e){$('locationMsg').className='status error';$('locationMsg').textContent=e.message;}}
+async function addRestaurant(){try{const location_id=selectedLeaf('r');if(!location_id)return alert('국가 → 시/도 → 시/군/구 → 읍/면/동 → 리 → 상권을 선택하세요.');const name=$('rName').value.trim();if(!name)return alert('음식점명을 입력하세요.');const body={location_id,name,category:$('rCategory').value,price_min:+$('rMin').value||0,price_max:+$('rMax').value||0,address:$('rAddress').value.trim(),main_menu:$('rMenu').value.trim(),rating:+$('rRating').value||0,review_count:+$('rReviews').value||0,google_place_id:$('rGooglePlace').value.trim()||null,latitude:+$('rLat').value||null,longitude:+$('rLng').value||null,image_path:$('rImage').value.trim()||null,lunch_start:$('rLunchStart').value||'11:00',lunch_end:$('rLunchEnd').value||'15:00'};const d=await api('/api/admin/restaurants',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});$('restaurantMsg').className='status ok';$('restaurantMsg').textContent=d.message;DATA.restaurants=await api('/api/admin/restaurants');renderRestaurants();}catch(e){$('restaurantMsg').className='status error';$('restaurantMsg').textContent=e.message;}}
+async function syncPlaces(){try{const o=$('syncCity').selectedOptions[0];if(!$('syncCity').value)return alert('도시를 선택하세요.');$('syncMsg').textContent='실제 장소 데이터를 가져오는 중입니다...';const d=await api('/api/admin/sync-google-places',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({city_id:+$('syncCity').value,city_name:o.textContent,country_code:$('syncCountry').value})});$('syncMsg').className='status ok';$('syncMsg').textContent=`완료: 음식점 ${d.restaurants}개 · 관광/카페/호텔 ${d.places}개`;await loadAll();}catch(e){$('syncMsg').className='status error';$('syncMsg').textContent=e.message;}}
+async function login(){try{await api('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:$('username').value.trim(),password:$('password').value})});location.reload();}catch(e){$('loginMsg').textContent=e.message;}}
+async function logout(){await api('/api/auth/logout',{method:'POST'});location.reload();}
+async function init(){try{const me=await api('/api/auth/me');if(!me.loggedIn)return;$('login').style.display='none';$('app').style.display='block';await loadAll();show('location');}catch(e){$('loginMsg').textContent=e.message;}}
+bindCascade('loc');bindCascade('r');init();
+</script></body></html>

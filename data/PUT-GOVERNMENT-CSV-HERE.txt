@@ -1,0 +1,1 @@
+정부/공공데이터포털 법정동 CSV를 이 폴더에 korea_legal_dong.csv 이름으로 넣으세요.
